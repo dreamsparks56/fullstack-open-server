@@ -24,6 +24,22 @@ let persons = [
     }
 ]
 
+const infoMain = (people) => {
+    return(
+        `<div>
+        Phonebook has info for ${people} people
+    </div>
+    <br>
+    <div>
+        ${new Date()}
+    </div>`
+    )}
+
+
+app.get('/info', (request, response) => {
+    response.send(infoMain(persons.length))
+})
+
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
