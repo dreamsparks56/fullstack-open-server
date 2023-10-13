@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
     {
       "id": 1,
@@ -55,6 +57,25 @@ app.get('/api/persons/:id', (request, response) => {
   } else {
     response.status(404).end()
   }
+})
+
+const generateId = () => 
+  Math.floor(Math.random()*9999999999999)
+
+app.post('/api/persons', (request, response) => {
+  const maxId = persons.length > 0
+    ? Math.max(...persons.map(n => n.id)) 
+    : 0
+
+  const body = request.body
+
+  const person = {
+    id: generateId (),
+    name: body.name,
+    number: body.number
+  }
+  persons = persons.concat(person)
+    response.json(person)
 })
 
 app.delete('/api/persons/:id',(request, response) => {
