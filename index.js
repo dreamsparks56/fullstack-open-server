@@ -67,7 +67,19 @@ app.post('/api/persons', (request, response) => {
     ? Math.max(...persons.map(n => n.id)) 
     : 0
 
-  const body = request.body
+  const body = request.body  
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({ 
+      error: 'name or number missing' 
+    })
+  }
+
+  if (persons.find(person => person.name === body.name)) {
+    return response.status(400).json({ 
+      error: `'${body.name}' already exists` 
+    })
+  }
 
   const person = {
     id: generateId (),
