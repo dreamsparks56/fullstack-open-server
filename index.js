@@ -2,6 +2,10 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
+morgan.token('body', getBody = (req) => JSON.stringify(req.body))
+
+const postFormat = ':method :url :status :res[content-length] - :response-time ms :body'
+
 app.use(express.json())
 app.use(morgan('tiny'))
 
@@ -64,11 +68,10 @@ app.get('/api/persons/:id', (request, response) => {
 const generateId = () => 
   Math.floor(Math.random()*9999999999999)
 
-app.post('/api/persons', (request, response) => {
-  const maxId = persons.length > 0
-    ? Math.max(...persons.map(n => n.id)) 
-    : 0
+app.use(morgan(postFormat))
 
+app.post('/api/persons', (request, response) => {
+  
   const body = request.body  
 
   if (!body.name || !body.number) {
@@ -91,6 +94,8 @@ app.post('/api/persons', (request, response) => {
   persons = persons.concat(person)
     response.json(person)
 })
+
+app.use(morgan('tiny'))
 
 app.delete('/api/persons/:id',(request, response) => {
   const id = Number(request.params.id)
