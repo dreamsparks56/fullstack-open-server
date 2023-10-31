@@ -81,21 +81,32 @@ app.get('/api/notes/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+const generateId = () => 
+  Math.floor(Math.random()*9999999999999)
+
 app.post('/api/persons', (request, response) => {
+  
   const body = request.body  
 
-  if (body.name === undefined || body.number === undefined) {
+  if (!body.name || !body.number) {
     return response.status(400).json({ 
       error: 'name or number missing' 
     })
   }
-  const person = new Person({
+
+  if (persons.find(person => person.name === body.name)) {
+    return response.status(400).json({ 
+      error: `'${body.name}' already exists` 
+    })
+  }
+
+  const person = {
+    id: generateId (),
     name: body.name,
-    number: body.number,
-  })
-  person.save().then(person => {
+    number: body.number
+  }
+  persons = persons.concat(person)
     response.json(person)
-  })
 })
 
 app.delete('/api/persons/:id',(request, response, next) => {
@@ -106,7 +117,7 @@ app.delete('/api/persons/:id',(request, response, next) => {
   .catch(error => next(error))
 })
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
